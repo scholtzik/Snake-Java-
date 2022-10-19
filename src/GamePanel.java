@@ -41,27 +41,41 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     //draws grid for better visualization
     public void draw(Graphics g){
-        for(int i = 0;i<SCREEN_HEIGHT/UNIT_SIZE;i++){
-            g.drawLine(i*UNIT_SIZE,0,i*UNIT_SIZE,SCREEN_HEIGHT);
-            g.drawLine(0,i*UNIT_SIZE,SCREEN_WIDTH ,i*UNIT_SIZE);
-        }
-        g.setColor(Color.red);
-        g.fillOval(appleX,appleY,UNIT_SIZE,UNIT_SIZE);
+        if(running) {
+//            for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
+//                g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);
+//                g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);
+//            }
+            g.setColor(Color.red);
+            g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-        for(int i = 0; i< bodyParts; i++){
-            //draws head of the snake
-            if(i==0){
-                g.setColor(Color.green);
-                g.fillRect(x[i],y[i],UNIT_SIZE,UNIT_SIZE);
+            for (int i = 0; i < bodyParts; i++) {
+                //draws head of the snake
+                if (i == 0) {
+                    g.setColor(Color.green);
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                }
+                //draws rest of the body
+                else {
+//                    g.setColor(new Color(45, 180, 0));
+                    g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                }
             }
-            //draws rest of the body
-            else{
-                g.setColor(new Color(45,180,0));
-                g.fillRect(x[i],y[i],UNIT_SIZE,UNIT_SIZE);
-            }
+            drawApplesEaten(g);
+        }else {
+            gameOver(g);
         }
-
     }
+
+
+    private void drawApplesEaten(Graphics g) {
+        g.setColor(Color.red);
+        g.setFont(new Font("Times New Roman",Font.BOLD,40));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Score "+applesEaten,(SCREEN_WIDTH - metrics.stringWidth("Score "+applesEaten))/2 , g.getFont().getSize());
+    }
+
     public void newApple(){
         appleX =random.nextInt((int)(SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
         appleY =random.nextInt((int)(SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
@@ -80,13 +94,38 @@ public class GamePanel extends JPanel implements ActionListener {
 
     }
     public void checkApple(){
-
+        if((x[0] == appleX) && y[0] == appleY){
+            bodyParts++;
+            applesEaten++;
+            newApple();
+        }
     }
     public void checkCollisions(){
-
+        for(int i = bodyParts; i> 0; i--){
+            if ((x[0] == x[i] && y[0] == y[i])) {
+                this.running = false;
+                break;
+            }
+        }
+        if(x[0]< 0){
+            this.running=false;
+        }
+        if(x[0] > SCREEN_WIDTH){
+            this.running=false;
+        }
+        if(y[0]< 0){
+            this.running=false;
+        }
+        if(y[0] > SCREEN_HEIGHT){
+            this.running=false;
+        }
     }
-    public void gameOver(){
-
+    public void gameOver(Graphics g){
+        drawApplesEaten(g);
+        g.setColor(Color.red);
+        g.setFont(new Font("Times New Roman",Font.BOLD,75));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Game over",(SCREEN_WIDTH - metrics.stringWidth("Game over"))/2 , SCREEN_HEIGHT/2);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -101,7 +140,28 @@ public class GamePanel extends JPanel implements ActionListener {
     public class MyKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
-
+            switch(e.getKeyCode()){
+                case KeyEvent.VK_LEFT:
+                    if(direction!= SnakeDirection.EAST){
+                        direction=SnakeDirection.WEST;
+                    }
+                    break;
+                case KeyEvent.VK_UP:
+                    if(direction!= SnakeDirection.SOUTH) {
+                        direction = SnakeDirection.NORTH;
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if(direction!= SnakeDirection.WEST) {
+                        direction = SnakeDirection.EAST;
+                    }
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if(direction!= SnakeDirection.NORTH) {
+                        direction = SnakeDirection.SOUTH;
+                    }
+                    break;
+            }
         }
     }
 }

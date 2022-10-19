@@ -9,7 +9,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int UNIT_SIZE = 25;
     //to calculate how many game units we can fit
     static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;
-    static final int DElAY = 100;
+    static final int DElAY = 50;
     final int x[]= new int[UNIT_SIZE];
     final int y[]= new int[UNIT_SIZE];
     int bodyParts=6;
@@ -70,14 +70,12 @@ public class GamePanel extends JPanel implements ActionListener {
         for(int i = bodyParts; i>0 ;i--){
             x[i] = x[i-1];
             y[i] = y[i-1];
-
-            switch (direction){
-                case NORTH : y[0] = y[0] - UNIT_SIZE; break;
-                case SOUTH: y[0] = y[0] + UNIT_SIZE; break;
-                case WEST: x[0] = x[0] - UNIT_SIZE; break;
-                case EAST: x[0] = x[0] + UNIT_SIZE; break;
-
-            }
+        }
+        switch (direction){
+            case NORTH : y[0] = y[0] - UNIT_SIZE; break;
+            case SOUTH: y[0] = y[0] + UNIT_SIZE; break;
+            case WEST: x[0] = x[0] - UNIT_SIZE; break;
+            case EAST: x[0] = x[0] + UNIT_SIZE; break;
         }
 
     }
